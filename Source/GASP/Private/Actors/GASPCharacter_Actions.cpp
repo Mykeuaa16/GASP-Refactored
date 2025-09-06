@@ -153,11 +153,6 @@ void AGASPCharacter::ServerSetRagdollTargetLocation_Implementation(const FVector
 
 void AGASPCharacter::RefreshRagdolling(const float DeltaTime)
 {
-	if (LocomotionAction != LocomotionActionTags::Ragdoll)
-	{
-		return;
-	}
-
 	// Since we are dealing with physics here, we should not use functions such as USkinnedMeshComponent::GetSocketTransform() as
 	// they may return an incorrect result in situations like when the animation blueprint is not ticking or when URO is enabled.
 	const auto* PelvisBody{GetMesh()->GetBodyInstance(NAME_pelvis)};
@@ -187,14 +182,19 @@ void AGASPCharacter::RefreshRagdolling(const float DeltaTime)
 	// as the character's location, we don't do that because the camera depends on the
 	// capsule's bottom location, so its removal will cause the camera to behave erratically.
 	bool bGrounded;
-	SetActorLocation(RagdollTraceGround(bGrounded), false, nullptr, ETeleportType::TeleportPhysics);
+	SetActorLocation(RagdollTraceGround(bGrounded), false);
+
+	{
+		const auto Location{GetActorLocation()};
+		GetMesh()->SetWorldLocation({
+			Location.X, Location.Y, Location.Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight()
+		});
+	}
 
 	// Zero target location means that it hasn't been replicated yet, so we can't apply the logic below.
-
 	if (!bLocallyControlled && !RagdollTargetLocation.IsZero())
 	{
 		// Apply ragdoll location corrections.
-
 		static constexpr auto PullForce{750.0f};
 		static constexpr auto InterpolationSpeed{0.6f};
 

@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "GASPPlayerControllerExample.generated.h"
 
@@ -21,7 +20,7 @@ public:
 	class AGASPCharacterExample* GetPossessedPlayer();
 	UFUNCTION(BlueprintPure)
 	TSoftObjectPtr<class UInputMappingContext> GetDefaultInputMapping();
-	
+
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnRep_Pawn() override;

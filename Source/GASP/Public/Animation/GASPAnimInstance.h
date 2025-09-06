@@ -49,8 +49,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "CharacterInfromation|States", BlueprintReadOnly, Transient)
 	EGait Gait{};
 	UPROPERTY(VisibleAnywhere, Category = "CharacterInfromation|States", BlueprintReadOnly, Transient)
-	FGameplayTag
-	MovementState{};
+	FGameplayTag MovementState{};
 	UPROPERTY(VisibleAnywhere, Category = "CharacterInfromation|States", BlueprintReadOnly, Transient)
 	ERotationMode RotationMode{};
 	UPROPERTY(VisibleAnywhere, Category = "CharacterInfromation|States", BlueprintReadOnly, Transient)
@@ -175,12 +174,11 @@ protected:
 	float HeavyLandSpeedThreshold{700.f};
 	UPROPERTY(EditAnywhere, Category = "MovementInformation|General", BlueprintReadOnly)
 	bool bLanded{false};
-	UPROPERTY(EditAnywhere, Category = "MovementInformation|General", BlueprintReadOnly,
-		meta=(EditCondition="!bUseExperimentalStateMachine"))
+	UPROPERTY(Category = "MovementInformation|General", BlueprintReadOnly)
 	int32 MMDatabaseLOD{0};
-	UPROPERTY(EditAnywhere, Category = "MovementInformation|General", BlueprintReadOnly)
+	UPROPERTY(Category = "MovementInformation|General", BlueprintReadOnly)
 	uint8 bOffsetRootBoneEnabled : 1 {true};
-	UPROPERTY(EditAnywhere, Category = "MovementInformation|General", BlueprintReadOnly)
+	UPROPERTY(Category = "MovementInformation|General", BlueprintReadOnly)
 	uint8 bUseExperimentalStateMachine : 1 {false};
 
 public:
@@ -198,7 +196,7 @@ public:
 	void OnOverlayModeChanged(FGameplayTag OldOverlayMode);
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnPoseModeChanged(FGameplayTag OldGameplayTag);
-	
+
 	UFUNCTION(BlueprintPure, Category = "BlendStack", meta = (BlueprintThreadSafe))
 	EPoseSearchInterruptMode GetMatchingInterruptMode() const;
 	UFUNCTION(BlueprintPure, Category = "BlendStack", meta = (BlueprintThreadSafe))

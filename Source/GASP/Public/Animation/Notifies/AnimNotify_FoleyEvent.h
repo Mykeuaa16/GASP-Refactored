@@ -3,7 +3,6 @@
 #pragma once
 
 #include "GameplayTagContainer.h"
-#include "Types/EnumTypes.h"
 #include "AnimNotify_FoleyEvent.generated.h"
 
 /**

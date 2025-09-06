@@ -17,6 +17,23 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GASPTraversalComponent)
 
+#if WITH_EDITOR
+namespace TraversalVar
+{
+	int32 DrawDebugLevel{0};
+	FAutoConsoleVariableRef DrawDebugLevelStruct(
+		TEXT("gasp.traversal.DrawDebugLevel.enabled"), DrawDebugLevel,
+		TEXT("debug level for traversal"), ECVF_Default);
+
+	float DrawDebugDuration{0.f};
+	FAutoConsoleVariableRef DrawDebugDurationStruct(
+		TEXT("gasp.traversal.DrawDebugDuration.enabled"), DrawDebugDuration,
+		TEXT("debug duration for traversal"), ECVF_Default);
+}
+
+
+#endif
+
 namespace
 {
 	const FName NAME_FrontLedge{TEXT("FrontLedge")};
@@ -168,8 +185,8 @@ FTraversalResult UGASPTraversalComponent::TryTraversalAction(FTraversalCheckInpu
 	           ECC_Visibility);
 
 #if WITH_EDITOR && ALLOW_CONSOLE
-	const float& LifeTime = DrawDebugDuration;
-	if (DrawDebugLevel >= 2)
+	const float& LifeTime = TraversalVar::DrawDebugDuration;
+	if (TraversalVar::DrawDebugLevel >= 2)
 	{
 		DrawDebugCapsule(World, StartLocation, CheckInputs.TraceHalfHeight, CheckInputs.TraceRadius, FQuat::Identity,
 		                 FColor::Black, false, LifeTime);
@@ -211,19 +228,19 @@ FTraversalResult UGASPTraversalComponent::TryTraversalAction(FTraversalCheckInpu
 	}
 #if WITH_EDITOR && ALLOW_CONSOLE
 	// DEBUG: Draw Debug shapes at ledge locations.
-	if (DrawDebugLevel >= 1)
+	if (TraversalVar::DrawDebugLevel >= 1)
 	{
 		if (NewTraversalCheckResult.bHasFrontLedge)
 		{
 			DrawDebugSphere(World, NewTraversalCheckResult.FrontLedgeLocation, 10.0f, 12,
-			                FLinearColor::Green.ToFColor(true), false, DrawDebugDuration,
+			                FLinearColor::Green.ToFColor(true), false, TraversalVar::DrawDebugDuration,
 			                SDPG_World, 1.0f);
 		}
 
 		if (NewTraversalCheckResult.bHasBackLedge)
 		{
 			DrawDebugSphere(World, NewTraversalCheckResult.BackLedgeLocation, 10.0f, 12,
-			                FLinearColor::Blue.ToFColor(true), false, DrawDebugDuration,
+			                FLinearColor::Blue.ToFColor(true), false, TraversalVar::DrawDebugDuration,
 			                SDPG_World, 1.0f);
 		}
 	}
@@ -245,7 +262,7 @@ FTraversalResult UGASPTraversalComponent::TryTraversalAction(FTraversalCheckInpu
 	           ECC_Visibility);
 
 #if WITH_EDITOR && ALLOW_CONSOLE
-	if (DrawDebugLevel >= 1)
+	if (TraversalVar::DrawDebugLevel >= 1)
 	{
 		DrawDebugCapsule(World, ActorLocation, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity, FColor::Red,
 		                 false,
@@ -272,7 +289,7 @@ FTraversalResult UGASPTraversalComponent::TryTraversalAction(FTraversalCheckInpu
 	bool bHit = SweepTrace(World, Hit, HasRoomCheckFrontLedgeLocation, HasRoomCheckBackLedgeLocation, CapsuleRadius,
 	                       CapsuleHalfHeight, ECC_Visibility);
 #if WITH_EDITOR && ALLOW_CONSOLE
-	if (DrawDebugLevel >= 1)
+	if (TraversalVar::DrawDebugLevel >= 1)
 	{
 		DrawDebugCapsule(World, HasRoomCheckFrontLedgeLocation, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity,
 		                 FColor::Red, false,
@@ -305,7 +322,7 @@ FTraversalResult UGASPTraversalComponent::TryTraversalAction(FTraversalCheckInpu
 		           CapsuleHalfHeight, ECC_Visibility);
 
 #if WITH_EDITOR && ALLOW_CONSOLE
-		if (DrawDebugLevel >= 1)
+		if (TraversalVar::DrawDebugLevel >= 1)
 		{
 			DrawDebugCapsule(World, HasRoomCheckBackLedgeLocation, CapsuleHalfHeight, CapsuleRadius, FQuat::Identity,
 			                 FColor::Red, false, LifeTime);
@@ -394,7 +411,7 @@ FTraversalResult UGASPTraversalComponent::TryTraversalAction(FTraversalCheckInpu
 	if (!IsValid(AnimationMontage))
 	{
 #if WITH_EDITOR && ALLOW_CONSOLE
-		GEngine->AddOnScreenDebugMessage(NULL, DrawDebugDuration, FColor::Red,
+		GEngine->AddOnScreenDebugMessage(NULL, TraversalVar::DrawDebugDuration, FColor::Red,
 		                                 FString::Printf(TEXT("Failed To Find Montage!")));
 #endif
 		return {true, false};
@@ -408,18 +425,20 @@ FTraversalResult UGASPTraversalComponent::TryTraversalAction(FTraversalCheckInpu
 	Server_Traversal(TraversalCheckResult);
 
 #if WITH_EDITOR
-	if (DrawDebugLevel >= 2)
+	if (TraversalVar::DrawDebugLevel >= 2)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, DrawDebugDuration, FLinearColor(0.0f, 0.66f, 1.0f).ToFColor(true),
+		GEngine->AddOnScreenDebugMessage(-1, TraversalVar::DrawDebugDuration,
+		                                 FLinearColor(0.0f, 0.66f, 1.0f).ToFColor(true),
 		                                 FString::Printf(TEXT("%s"), *NewTraversalCheckResult.ToString()));
-		GEngine->AddOnScreenDebugMessage(-1, DrawDebugDuration,
+		GEngine->AddOnScreenDebugMessage(-1, TraversalVar::DrawDebugDuration,
 		                                 FLinearColor(1.0f, 0.0f, 0.824021f).ToFColor(true),
 		                                 FString::Printf(
 			                                 TEXT("%s"), *NewTraversalCheckResult.ActionType.ToString()));
 
 		const FString PerfString = FString::Printf(TEXT("Execution Time: %f seconds"),
 		                                           FPlatformTime::Seconds() - StartTime);
-		GEngine->AddOnScreenDebugMessage(-1, DrawDebugDuration, FLinearColor(1.0f, 0.5f, 0.15f).ToFColor(true),
+		GEngine->AddOnScreenDebugMessage(-1, TraversalVar::DrawDebugDuration,
+		                                 FLinearColor(1.0f, 0.5f, 0.15f).ToFColor(true),
 		                                 FString::Printf(TEXT("%s"), *PerfString));
 	}
 #endif

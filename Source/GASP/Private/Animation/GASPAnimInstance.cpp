@@ -15,6 +15,23 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GASPAnimInstance)
 
+namespace AnimVars
+{
+	bool bUseExperimentalStateMachine{false};
+	FAutoConsoleVariableRef EnabledStateMachineStruct(
+		TEXT("gasp.statemachine.enabled"), bUseExperimentalStateMachine, TEXT("enabled state machine"), ECVF_Default);
+
+	bool bOffsetRootBoneEnabled{false};
+	FAutoConsoleVariableRef OffsetRootBoneEnabledStruct(
+		TEXT("gasp.offsetrootbone.enabled"), bOffsetRootBoneEnabled, TEXT("enabled offset root bone"),
+		ECVF_Default);
+
+	int32 MMDatabaseLOD{0};
+	FAutoConsoleVariableRef MMDatabaseLODStruct(
+		TEXT("gasp.motionmatching.LOD"), MMDatabaseLOD, TEXT("LOD for motion matching database"),
+		ECVF_Default);
+}
+
 void UGASPAnimInstance::OnLanded(const FHitResult& HitResult)
 {
 	bLanded = true;
@@ -150,6 +167,19 @@ void UGASPAnimInstance::NativeInitializeAnimation()
 	CachedCharacter->LandedDelegate.AddUniqueDynamic(this, &ThisClass::OnLanded);
 	CachedCharacter->OverlayModeChanged.AddUniqueDynamic(this, &ThisClass::OnOverlayModeChanged);
 	CachedCharacter->PoseModeChanged.AddUniqueDynamic(this, &ThisClass::OnPoseModeChanged);
+
+	AnimVars::EnabledStateMachineStruct->OnChangedDelegate().AddWeakLambda(this, [this](const IConsoleVariable* ICVar)
+	{
+		bUseExperimentalStateMachine = ICVar ? ICVar->GetBool() : false;
+	});
+	AnimVars::OffsetRootBoneEnabledStruct->OnChangedDelegate().AddWeakLambda(this, [this](const IConsoleVariable* ICVar)
+	{
+		bOffsetRootBoneEnabled = ICVar ? ICVar->GetBool() : false;
+	});
+	AnimVars::MMDatabaseLODStruct->OnChangedDelegate().AddWeakLambda(this, [this](const IConsoleVariable* ICVar)
+	{
+		MMDatabaseLOD = ICVar ? ICVar->GetInt() : false;
+	});
 }
 
 void UGASPAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -349,7 +379,7 @@ bool UGASPAnimInstance::IsPivoting() const
 		};
 
 		const FVector2D* MinMax = GaitRanges.Find(Gait);
-		
+
 		return Speed > MinMax->X && Speed < MinMax->Y;
 	};
 
@@ -369,7 +399,7 @@ bool UGASPAnimInstance::IsPivoting() const
 		return FMath::GetMappedRangeValueClamped<float, float>({InOut->X, InOut->Y},
 		                                                       {InOut->Z, InOut->W}, Speed);
 	};
-	
+
 	return InRange(CharacterInfo.Speed) && FMath::Abs(GetTrajectoryTurnAngle()) >= ClampedSpeed(CharacterInfo.Speed) &&
 		IsMoving();
 }
@@ -522,6 +552,7 @@ void UGASPAnimInstance::RefreshMatchingPostSelection(const FAnimUpdateContext& C
 
 	UMotionMatchingAnimNodeLibrary::GetMotionMatchingSearchResult(Reference, OutResult, bIsValidResult);
 	BlendStack.PoseSearchDatabase = OutResult.SelectedDatabase;
+	UPoseSearchLibrary::GetDatabaseTags(OutResult.SelectedDatabase, BlendStack.DatabaseTags);
 }
 
 void UGASPAnimInstance::RefreshOffsetRoot(const FAnimUpdateContext& Context, const FAnimNodeReference& Node)
@@ -554,6 +585,7 @@ void UGASPAnimInstance::RefreshBlendStack(const FAnimUpdateContext& Context, con
 	BlendStack.AnimTime = UBlendStackAnimNodeLibrary::GetCurrentBlendStackAnimAssetTime(Node);
 	BlendStack.AnimAsset = UBlendStackAnimNodeLibrary::GetCurrentBlendStackAnimAsset(Node);
 	BlendStack.PlayRate = GetDynamicPlayRate(Node);
+	
 	const UAnimSequence* NewAnimSequence{static_cast<UAnimSequence*>(BlendStack.AnimAsset.Get())};
 	if (!NewAnimSequence)
 	{
@@ -580,6 +612,7 @@ void UGASPAnimInstance::RefreshBlendStackMachine(const FAnimUpdateContext& Conte
 	}
 	BlendStackMachine.bLoop = UBlendStackAnimNodeLibrary::IsCurrentAssetLooping(Reference);
 	BlendStackMachine.AssetTimeRemaining = UBlendStackAnimNodeLibrary::GetCurrentAssetTimeRemaining(Reference);
+	
 }
 
 void UGASPAnimInstance::RefreshEssentialValues(const float DeltaSeconds)

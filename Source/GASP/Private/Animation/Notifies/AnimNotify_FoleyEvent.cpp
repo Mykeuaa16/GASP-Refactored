@@ -12,10 +12,12 @@
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(AnimNotify_FoleyEvent)
 
-#if WITH_EDITOR && ALLOW_CONSOLE
-static IConsoleVariable* DrawDebug = IConsoleManager::Get().FindConsoleVariable(
-	TEXT("DDCvar.DrawVisLogShapesForFoleySounds"));
-#endif
+namespace FoleyVars
+{
+	bool bDrawDebug{false};
+	FAutoConsoleVariableRef EnabledStateMachineStruct(
+		TEXT("gasp.DrawVisLogShapesForFoleySounds.enabled"), bDrawDebug, TEXT("enabled debug for foley"), ECVF_Default);
+}
 
 UAnimNotify_FoleyEvent::UAnimNotify_FoleyEvent()
 {
@@ -94,12 +96,7 @@ void UAnimNotify_FoleyEvent::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 	}
 
 #if WITH_EDITOR && ALLOW_CONSOLE
-	if (!DrawDebug)
-	{
-		return;
-	}
-	const bool bDebug = DrawDebug->GetBool();
-	if (!bDebug)
+	if (!FoleyVars::bDrawDebug)
 	{
 		return;
 	}
