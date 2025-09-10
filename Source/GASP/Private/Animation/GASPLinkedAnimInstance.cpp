@@ -64,7 +64,6 @@ FGameplayTag UGASPLinkedAnimInstance::GetMovementState() const
 		return Parent->GetMovementState();
 	}
 	return FGameplayTag::EmptyTag;
-();
 }
 
 FGameplayTag UGASPLinkedAnimInstance::GetMovementMode() const
