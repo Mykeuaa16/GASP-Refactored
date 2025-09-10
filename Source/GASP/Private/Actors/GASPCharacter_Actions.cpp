@@ -420,6 +420,7 @@ void AGASPCharacter::StopRagdollingImplementation()
 	if (bGrounded)
 	{
 		MovementComponent->SetMovementMode(MOVE_Walking);
+		AnimationInstance->Montage_Play(SelectGetUpMontage(bRagdollFacingUpward));
 	}
 	else
 	{
@@ -428,7 +429,5 @@ void AGASPCharacter::StopRagdollingImplementation()
 	}
 
 	SetLocomotionAction(FGameplayTag::EmptyTag);
-
-	AnimationInstance->Montage_Play(SelectGetUpMontage(bRagdollFacingUpward));
 	OnStopRagdolling();
 }

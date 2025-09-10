@@ -46,23 +46,23 @@ void AGASPCharacterExample::SprintAction(bool bPressed)
 {
 	if (bPressed)
 	{
-		SetDesiredGait(EGait::Sprint);
+		SetDesiredGait(GaitTags::Sprint);
 	}
 	else
 	{
-		SetDesiredGait(EGait::Run);
+		SetDesiredGait(GaitTags::Run);
 	}
 }
 
 void AGASPCharacterExample::WalkAction(bool bPressed)
 {
-	if (GetGait() != EGait::Walk)
+	if (GetGait() != GaitTags::Walk)
 	{
-		SetDesiredGait(EGait::Walk);
+		SetDesiredGait(GaitTags::Walk);
 	}
 	else
 	{
-		SetDesiredGait(EGait::Run);
+		SetDesiredGait(GaitTags::Run);
 	}
 }
 
@@ -105,11 +105,11 @@ void AGASPCharacterExample::AimAction(bool bPressed)
 {
 	if (bPressed)
 	{
-		SetRotationMode(ERotationMode::Aim);
+		SetRotationMode(RotationTags::Aim);
 	}
 	else
 	{
-		SetRotationMode(ERotationMode::OrientToMovement);
+		SetRotationMode(RotationTags::OrientToMovement);
 	}
 }
 
@@ -127,13 +127,13 @@ void AGASPCharacterExample::RagdollAction(bool bPressed)
 
 void AGASPCharacterExample::StrafeAction(bool bPressed)
 {
-	if (GetRotationMode() != ERotationMode::Strafe)
+	if (GetRotationMode() != RotationTags::Strafe)
 	{
-		SetRotationMode(ERotationMode::Strafe);
+		SetRotationMode(RotationTags::Strafe);
 	}
 	else
 	{
-		SetRotationMode(ERotationMode::OrientToMovement);
+		SetRotationMode(RotationTags::OrientToMovement);
 	}
 }
 

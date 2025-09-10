@@ -34,11 +34,10 @@ public:
 	AGASPCharacter* GetCharacter() const;
 
 	UFUNCTION(BlueprintGetter, meta = (BlueprintThreadSafe))
-	EGait GetGait() const;
+	FGameplayTag GetGait() const;
 
 	UFUNCTION(BlueprintGetter, meta = (BlueprintThreadSafe))
-	FGameplayTag
- GetMovementState() const;
+	FGameplayTag GetMovementState() const;
 
 	UFUNCTION(BlueprintGetter, meta = (BlueprintThreadSafe))
 	FGameplayTag GetMovementMode() const;
@@ -47,7 +46,7 @@ public:
 	FGameplayTag GetStanceMode() const;
 
 	UFUNCTION(BlueprintGetter, meta = (BlueprintThreadSafe))
-	ERotationMode GetRotationMode() const;
+	FGameplayTag GetRotationMode() const;
 
 	UFUNCTION(BlueprintGetter, meta = (BlueprintThreadSafe))
 	FCharacterInfo GetCharacterInfo() const;

@@ -2,8 +2,10 @@
 
 #pragma once
 
+#include "GameplayTagContainer.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Types/EnumTypes.h"
+#include "Types/TagTypes.h"
 #include "AnimNotifyState_EarlyTransition.generated.h"
 
 /**
@@ -15,12 +17,12 @@ class GASP_API UAnimNotifyState_EarlyTransition : public UAnimNotifyState
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EarlyTransition")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EarlyTransition")
 	EEarlyTransitionDestination TransitionDestination{EEarlyTransitionDestination::ReTransition};
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EarlyTransition")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EarlyTransition")
 	EEarlyTransitionCondition TransitionCondition{EEarlyTransitionCondition::Always};
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EarlyTransition")
-	EGait GaitNotEqual{EGait::Walk};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "EarlyTransition")
+	FGameplayTag GaitNotEqual{GaitTags::Walk};
 
 public:
 	UAnimNotifyState_EarlyTransition();

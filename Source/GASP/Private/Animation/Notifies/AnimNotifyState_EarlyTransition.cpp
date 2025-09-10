@@ -4,6 +4,7 @@
 #include "Animation/Notifies/AnimNotifyState_EarlyTransition.h"
 #include "Animation/GASPAnimInstance.h"
 #include "Types/EnumTypes.h"
+#include "Utils/GASPBlueprintLibrary.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(AnimNotifyState_EarlyTransition)
 
@@ -73,7 +74,7 @@ FString UAnimNotifyState_EarlyTransition::GetNotifyName_Implementation() const
 		Output.Append(GetNameStringByValue(TransitionCondition));
 		Output.Append(TEXT(" - "));
 		Output.Append(TransitionCondition == EEarlyTransitionCondition::GaitNotEqual
-			              ? GetNameStringByValue(GaitNotEqual)
+			              ? *UGASPBlueprintLibrary::GetShortTagName(GaitNotEqual).ToString()
 			              : TEXT(""));
 		break;
 	default:

@@ -28,7 +28,7 @@ struct GASP_API FTraversalChooserInput
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Traversal")
 	FGameplayTag ActionType{FGameplayTag::EmptyTag};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Traversal")
-	EGait Gait{EGait::Walk};
+	FGameplayTag Gait{FGameplayTag::EmptyTag};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Traversal")
 	TEnumAsByte<EMovementMode> MovementMode{MOVE_None};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Traversal")

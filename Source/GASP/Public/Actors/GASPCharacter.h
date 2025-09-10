@@ -9,10 +9,6 @@
 #include "Types/StructTypes.h"
 #include "GASPCharacter.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnRotationModeChanged, ERotationMode, OldRotationMode);
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGaitChanged, EGait, OldGait);
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateChanged, FGameplayTag, OldGameplayTag);
 
 UCLASS()
@@ -48,12 +44,12 @@ protected:
 	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PrevCustomMode) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Transient)
-	EGait DesiredGait{EGait::Run};
+	FGameplayTag DesiredGait{GaitTags::Run};
 
 	UPROPERTY(BlueprintReadOnly, Transient)
-	EGait Gait{EGait::Run};
+	FGameplayTag Gait{GaitTags::Run};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing=OnRep_RotationMode, Transient)
-	ERotationMode RotationMode{ERotationMode::Strafe};
+	FGameplayTag RotationMode{RotationTags::Strafe};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing=OnRep_MovementState, Transient)
 	FGameplayTag MovementState{MovementStateTags::Idle};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing=OnRep_MovementMode, Transient)
@@ -122,9 +118,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnStateChanged PoseModeChanged;
 	UPROPERTY(BlueprintAssignable)
-	FOnGaitChanged GaitChanged;
+	FOnStateChanged GaitChanged;
 	UPROPERTY(BlueprintAssignable)
-	FOnRotationModeChanged RotationModeChanged;
+	FOnStateChanged RotationModeChanged;
 	UPROPERTY(BlueprintAssignable)
 	FOnStateChanged MovementStateChanged;
 	UPROPERTY(BlueprintAssignable)
@@ -158,17 +154,17 @@ public:
 	 *		Movement States		*
 	 ****************************/
 	UFUNCTION(BlueprintCallable)
-	void SetGait(const EGait NewGait, bool bForce = false);
+	void SetGait(const FGameplayTag NewGait, bool bForce = false);
 
 	UFUNCTION(BlueprintCallable)
-	void SetDesiredGait(const EGait NewGait, bool bForce = false);
+	void SetDesiredGait(const FGameplayTag NewGait, bool bForce = false);
 	UFUNCTION(Server, Reliable)
-	void Server_SetDesiredGait(const EGait NewGait);
+	void Server_SetDesiredGait(const FGameplayTag NewGait);
 
 	UFUNCTION(BlueprintCallable)
-	void SetRotationMode(const ERotationMode NewRotationMode, const bool bForce = false);
+	void SetRotationMode(const FGameplayTag NewRotationMode, const bool bForce = false);
 	UFUNCTION(Server, Reliable)
-	void Server_SetRotationMode(const ERotationMode NewRotationMode);
+	void Server_SetRotationMode(const FGameplayTag NewRotationMode);
 
 	UFUNCTION(BlueprintCallable)
 	void SetMovementState(const FGameplayTag
@@ -222,13 +218,13 @@ public:
 	}
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE EGait GetGait() const
+	FORCEINLINE FGameplayTag GetGait() const
 	{
 		return Gait;
 	}
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE ERotationMode GetRotationMode() const
+	FORCEINLINE FGameplayTag GetRotationMode() const
 	{
 		return RotationMode;
 	}
@@ -240,8 +236,7 @@ public:
 	}
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE FGameplayTag
-	GetMovementState() const
+	FORCEINLINE FGameplayTag GetMovementState() const
 	{
 		return MovementState;
 	}
@@ -277,13 +272,13 @@ private:
 	UFUNCTION()
 	virtual void OnRep_PoseMode(const FGameplayTag& OldPoseMode);
 	UFUNCTION()
-	virtual void OnRep_Gait(const EGait& OldGait);
+	virtual void OnRep_Gait(const FGameplayTag& OldGait);
 	UFUNCTION()
 	virtual void OnRep_StanceMode(const FGameplayTag& OldStanceMode);
 	UFUNCTION()
 	virtual void OnRep_MovementMode(const FGameplayTag& OldMovementMode);
 	UFUNCTION()
-	virtual void OnRep_RotationMode(const ERotationMode& OldRotationMode);
+	virtual void OnRep_RotationMode(const FGameplayTag& OldRotationMode);
 	UFUNCTION()
 	virtual void OnRep_MovementState(const FGameplayTag& OldMovementState);
 	UFUNCTION()

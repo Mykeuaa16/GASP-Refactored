@@ -2,10 +2,9 @@
 
 #pragma once
 
-
-#include "Types/EnumTypes.h"
 #include "GameplayTags.h"
 #include "Utils/GASPMath.h"
+#include "TagTypes.h"
 #include "Curves/CurveFloat.h"
 #include "Curves/CurveVector.h"
 #include "StructTypes.generated.h"
@@ -18,10 +17,11 @@ struct GASP_API FGaitSettings
 {
 	GENERATED_BODY()
 
-	float GetSpeed(const EGait Gait, const FVector& Velocity, const FRotator& ActorRotation,
-	               const bool bIsCrouched = false) const
+	float GetSpeed(const FGameplayTag& Gait, const FVector& Velocity,
+	               const FRotator& ActorRotation) const
 	{
-		const FVector& SpeedRange{bIsCrouched ? CrouchSpeed : StandingSpeed.FindRef(Gait)};
+		const auto SpeedRange = SpeedMap.Contains(Gait) ? SpeedMap.FindRef(Gait) : FVector::ZeroVector;
+
 		return UE_REAL_TO_FLOAT(InterpolateSpeedForDirection(SpeedRange, Velocity, ActorRotation));
 	}
 
@@ -47,14 +47,11 @@ struct GASP_API FGaitSettings
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly,
 		meta = (Description = "X = Forward Speed, Y = Strafe Speed, Z = Backwards Speed"))
-	TMap<EGait, FVector> StandingSpeed{
-		{EGait::Walk, {200.f, 180.f, 150.f}},
-		{EGait::Run, {450.f, 400.f, 350.f}},
-		{EGait::Sprint, {700.f, 0.f, 0.f}}
+	TMap<FGameplayTag, FVector> SpeedMap{
+			{GaitTags::Walk, {200.f, 180.f, 150.f}},
+			{GaitTags::Run, {450.f, 400.f, 350.f}},
+			{GaitTags::Sprint, {700.f, 0.f, 0.f}}
 	};
-	UPROPERTY(EditAnywhere, BlueprintReadOnly,
-		meta = (Description = "X = Forward Speed, Y = Strafe Speed, Z = Backwards Speed"))
-	FVector CrouchSpeed{225.f, 200.f, 180.f};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UCurveFloat> StrafeCurve{};

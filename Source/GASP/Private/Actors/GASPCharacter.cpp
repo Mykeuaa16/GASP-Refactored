@@ -167,7 +167,7 @@ void AGASPCharacter::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8
 	}
 }
 
-void AGASPCharacter::SetGait(const EGait NewGait, const bool bForce)
+void AGASPCharacter::SetGait(const FGameplayTag NewGait, const bool bForce)
 {
 	if (!ensure(MovementComponent))
 	{
@@ -184,7 +184,7 @@ void AGASPCharacter::SetGait(const EGait NewGait, const bool bForce)
 	}
 }
 
-void AGASPCharacter::SetDesiredGait(EGait NewGait, bool bForce)
+void AGASPCharacter::SetDesiredGait(FGameplayTag NewGait, bool bForce)
 {
 	if (NewGait != Gait || bForce)
 	{
@@ -198,7 +198,7 @@ void AGASPCharacter::SetDesiredGait(EGait NewGait, bool bForce)
 	}
 }
 
-void AGASPCharacter::SetRotationMode(const ERotationMode NewRotationMode, const bool bForce)
+void AGASPCharacter::SetRotationMode(const FGameplayTag NewRotationMode, const bool bForce)
 {
 	if (NewRotationMode != RotationMode || bForce)
 	{
@@ -238,18 +238,17 @@ void AGASPCharacter::Server_SetMovementMode_Implementation(const FGameplayTag Ne
 	SetMovementMode(NewMovementMode);
 }
 
-void AGASPCharacter::Server_SetRotationMode_Implementation(const ERotationMode NewRotationMode)
+void AGASPCharacter::Server_SetRotationMode_Implementation(const FGameplayTag NewRotationMode)
 {
 	SetRotationMode(NewRotationMode);
 }
 
-void AGASPCharacter::Server_SetDesiredGait_Implementation(const EGait NewGait)
+void AGASPCharacter::Server_SetDesiredGait_Implementation(const FGameplayTag NewGait)
 {
 	SetDesiredGait(NewGait);
 }
 
-void AGASPCharacter::SetMovementState(const FGameplayTag
-                                      NewMovementState, const bool bForce)
+void AGASPCharacter::SetMovementState(const FGameplayTag NewMovementState, const bool bForce)
 {
 	if (!ensure(MovementComponent))
 	{
@@ -278,6 +277,8 @@ void AGASPCharacter::SetStanceMode(const FGameplayTag NewStanceMode, const bool 
 		StanceMode = NewStanceMode;
 		MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, StanceMode, this);
 
+		MovementComponent->SetStance(NewStanceMode);
+			
 		if (GetLocalRole() == ROLE_AutonomousProxy && IsValid(GetNetConnection()))
 		{
 			Server_SetStanceMode(NewStanceMode);
@@ -298,11 +299,11 @@ void AGASPCharacter::Server_SetMovementState_Implementation(const FGameplayTag N
 
 bool AGASPCharacter::CanSprint()
 {
-	if (RotationMode == ERotationMode::OrientToMovement)
+	if (RotationMode == RotationTags::OrientToMovement)
 	{
 		return true;
 	}
-	if (RotationMode == ERotationMode::Aim)
+	if (RotationMode == RotationTags::Aim)
 	{
 		return false;
 	}
@@ -408,19 +409,19 @@ FVector2D AGASPCharacter::GetMovementInputScaleValue(const FVector2D InVector) c
 
 void AGASPCharacter::RefreshGait()
 {
-	EGait NewGait;
+	FGameplayTag NewGait{DesiredGait};
 
-	if (DesiredGait == EGait::Sprint && CanSprint())
+	if (DesiredGait == GaitTags::Sprint && CanSprint())
 	{
-		NewGait = HasFullMovementInput() ? EGait::Sprint : EGait::Run;
+		NewGait = HasFullMovementInput() ? GaitTags::Sprint : GaitTags::Run;
 	}
-	else if (DesiredGait == EGait::Walk)
+	else if (DesiredGait == GaitTags::Walk)
 	{
-		NewGait = EGait::Walk;
+		NewGait = GaitTags::Walk;
 	}
-	else
+	else if (DesiredGait == GaitTags::Sprint || DesiredGait == GaitTags::Run)
 	{
-		NewGait = HasFullMovementInput() ? EGait::Run : EGait::Walk;
+		NewGait = HasFullMovementInput() ? GaitTags::Run : GaitTags::Walk;
 	}
 
 	SetGait(NewGait);
@@ -509,7 +510,7 @@ void AGASPCharacter::OnRep_PoseMode(const FGameplayTag& OldPoseMode)
 	PoseModeChanged.Broadcast(OldPoseMode);
 }
 
-void AGASPCharacter::OnRep_Gait(const EGait& OldGait)
+void AGASPCharacter::OnRep_Gait(const FGameplayTag& OldGait)
 {
 	GaitChanged.Broadcast(OldGait);
 }
@@ -524,7 +525,7 @@ void AGASPCharacter::OnRep_MovementMode(const FGameplayTag& OldMovementMode)
 	MovementModeChanged.Broadcast(OldMovementMode);
 }
 
-void AGASPCharacter::OnRep_RotationMode(const ERotationMode& OldRotationMode)
+void AGASPCharacter::OnRep_RotationMode(const FGameplayTag& OldRotationMode)
 {
 	RotationModeChanged.Broadcast(OldRotationMode);
 }

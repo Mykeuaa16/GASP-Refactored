@@ -2,7 +2,6 @@
 
 #pragma once
 
-
 #include "EnumTypes.generated.h"
 
 /* Returns the enumeration index as number. */
@@ -18,29 +17,6 @@ static FORCEINLINE FString GetNameStringByValue(const T InValue)
 {
 	return StaticEnum<T>()->GetNameStringByValue(static_cast<int32>(InValue));
 }
-
-
-/**
- * Movement gait
- */
-UENUM(BlueprintType, meta = (ScriptName = "EGait"))
-enum class EGait : uint8
-{
-	Walk,
-	Run,
-	Sprint
-};
-
-/**
- *
- */
-UENUM(BlueprintType, meta = (ScriptName = "ERotationMode"))
-enum class ERotationMode : uint8
-{
-	OrientToMovement,
-	Strafe,
-	Aim
-};
 
 UENUM(BlueprintType, meta = (ScriptName = "EMovementDirection"))
 enum class EMovementDirection : uint8

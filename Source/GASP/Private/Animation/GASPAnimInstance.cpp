@@ -61,7 +61,7 @@ EOffsetRootBoneMode UGASPAnimInstance::GetOffsetRootRotationMode() const
 	float YawDifference = CharacterInfo.ActorTransform.Rotator().Yaw - CharacterInfo.RootTransform.Rotator().Yaw;
 	YawDifference = FRotator::NormalizeAxis(YawDifference);
 
-	return !IsMoving() && RotationMode == ERotationMode::Aim && FMath::Abs(YawDifference) >= 90.f
+	return !IsMoving() && RotationMode == RotationTags::Aim && FMath::Abs(YawDifference) >= 90.f
 		       ? EOffsetRootBoneMode::LockOffsetAndConsumeAnimation
 		       : EOffsetRootBoneMode::Accumulate;
 }
@@ -69,7 +69,7 @@ EOffsetRootBoneMode UGASPAnimInstance::GetOffsetRootRotationMode() const
 EOffsetRootBoneMode UGASPAnimInstance::GetOffsetRootTranslationMode() const
 {
 	if (IsSlotActive(AnimNames.AnimationSlotName) || MovementMode == MovementModeTags::InAir || (!IsMoving() &&
-		RotationMode == ERotationMode::Aim))
+		RotationMode == RotationTags::Aim))
 	{
 		return EOffsetRootBoneMode::Release;
 	}
@@ -98,7 +98,7 @@ float UGASPAnimInstance::GetAOYaw() const
 		return 0.f;
 	}
 
-	return RotationMode == ERotationMode::OrientToMovement ? 0.f : GetAOValue().X;
+	return RotationMode == RotationTags::OrientToMovement ? 0.f : GetAOValue().X;
 }
 
 FTransform UGASPAnimInstance::GetHandIKTransform(const FName HandIKSocketName, const FName ObjectIKSocketName,
@@ -203,11 +203,13 @@ void UGASPAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	StanceMode = CachedCharacter->GetStanceMode();
 
 	StateContainer.RemoveTag(PreviousMovementMode);
-	StateContainer.AddTagFast(CachedCharacter->GetMovementMode());
+	StateContainer.AddTagFast(MovementMode);
 	StateContainer.RemoveTag(PreviousStanceMode);
-	StateContainer.AddTagFast(CachedCharacter->GetStanceMode());
+	StateContainer.AddTagFast(StanceMode);
 	StateContainer.RemoveTag(PreviousMovementState);
-	StateContainer.AddTagFast(CachedCharacter->GetMovementState());
+	StateContainer.AddTagFast(MovementState);
+	StateContainer.RemoveTag(PreviousGait);
+	StateContainer.AddTagFast(Gait);
 
 	RefreshEssentialValues(DeltaSeconds);
 	RefreshTrajectory(DeltaSeconds);
@@ -312,7 +314,7 @@ FFloatInterval UGASPAnimInstance::GetMatchingPlayRate() const
 {
 	if (MovementMode == MovementModeTags::Grounded)
 	{
-		return {.5f, 3.f};
+		return {.75f, 3.f};
 	}
 	return {.75f, 1.25f};
 }
@@ -333,9 +335,12 @@ FFootPlacementInterpolationSettings UGASPAnimInstance::GetPlantInterpolationSett
 
 float UGASPAnimInstance::GetMatchingNotifyRecencyTimeOut() const
 {
-	static constexpr float RecencyTimeOuts[]{.2f, .2f, .16f};
+	if (Gait == GaitTags::Sprint)
+	{
+		return .16f;
+	}
 
-	return Gait >= EGait::Walk && Gait <= EGait::Sprint ? RecencyTimeOuts[static_cast<int32>(Gait)] : .2f;
+	return .2f;
 }
 
 FPoseSnapshot& UGASPAnimInstance::SnapshotFinalRagdollPose()
@@ -363,7 +368,7 @@ bool UGASPAnimInstance::IsPivoting() const
 
 	if (!bUseExperimentalStateMachine)
 	{
-		return FMath::Abs(GetTrajectoryTurnAngle()) >= (RotationMode == ERotationMode::OrientToMovement ? 45.f : 30.f);
+		return FMath::Abs(GetTrajectoryTurnAngle()) >= (RotationMode == RotationTags::OrientToMovement ? 45.f : 30.f);
 	}
 
 	auto InRange = [this](const float Speed)
@@ -372,15 +377,15 @@ bool UGASPAnimInstance::IsPivoting() const
 		{
 			return Speed > 50.f && Speed < 200.f;
 		}
-		static const TMap<EGait, FVector2D> GaitRanges = {
-			{EGait::Walk, {50.f, 200.f}},
-			{EGait::Run, {200.f, 550.f}},
-			{EGait::Sprint, {200.f, 700.f}},
+		static const TMap<FGameplayTag, FVector2D> GaitRanges = {
+			{GaitTags::Walk, {50.f, 200.f}},
+			{GaitTags::Run, {200.f, 550.f}},
+			{GaitTags::Sprint, {200.f, 700.f}},
 		};
 
-		const FVector2D* MinMax = GaitRanges.Find(Gait);
+		const FVector2D& MinMax = GaitRanges.Contains(Gait) ? GaitRanges.FindRef(Gait) : FVector2D{200.f, 700.f};
 
-		return Speed > MinMax->X && Speed < MinMax->Y;
+		return Speed > MinMax.X && Speed < MinMax.Y;
 	};
 
 	auto ClampedSpeed = [this](const float Speed)
@@ -390,14 +395,17 @@ bool UGASPAnimInstance::IsPivoting() const
 			return 65.f;
 		}
 
-		static const TMap<EGait, FVector4f> InOutRanges = {
-			{EGait::Walk, FVector4f(150.f, 200.f, 70.f, 60.f)},
-			{EGait::Run, FVector4f(300.f, 500.f, 70.f, 60.f)},
-			{EGait::Sprint, FVector4f(300.f, 700.f, 60.f, 50.f)}
+		static const TMap<FGameplayTag, FVector4f> InOutRanges = {
+			{GaitTags::Walk, FVector4f(150.f, 200.f, 70.f, 60.f)},
+			{GaitTags::Run, FVector4f(300.f, 500.f, 70.f, 60.f)},
+			{GaitTags::Sprint, FVector4f(300.f, 700.f, 60.f, 50.f)}
 		};
-		const FVector4f* InOut = InOutRanges.Find(Gait);
-		return FMath::GetMappedRangeValueClamped<float, float>({InOut->X, InOut->Y},
-		                                                       {InOut->Z, InOut->W}, Speed);
+		const FVector4f& InOut = InOutRanges.Contains(Gait)
+			                         ? InOutRanges.FindRef(Gait)
+			                         : FVector4f(300.f, 700.f, 60.f, 50.f);
+
+		return FMath::GetMappedRangeValueClamped<float, float>({InOut.X, InOut.Y},
+		                                                       {InOut.Z, InOut.W}, Speed);
 	};
 
 	return InRange(CharacterInfo.Speed) && FMath::Abs(GetTrajectoryTurnAngle()) >= ClampedSpeed(CharacterInfo.Speed) &&
@@ -414,7 +422,7 @@ bool UGASPAnimInstance::ShouldTurnInPlace() const
 	float YawDifference = CharacterInfo.ActorTransform.Rotator().Yaw - CharacterInfo.RootTransform.Rotator().Yaw;
 	YawDifference = FRotator::NormalizeAxis(YawDifference);
 
-	return FMath::Abs(YawDifference) >= CharacterInfo.MaxTurnAngle && (RotationMode == ERotationMode::Aim || (
+	return FMath::Abs(YawDifference) >= CharacterInfo.MaxTurnAngle && (RotationMode == RotationTags::Aim || (
 		MovementState == MovementStateTags::Idle && PreviousMovementState == MovementStateTags::Moving));
 }
 
@@ -585,7 +593,7 @@ void UGASPAnimInstance::RefreshBlendStack(const FAnimUpdateContext& Context, con
 	BlendStack.AnimTime = UBlendStackAnimNodeLibrary::GetCurrentBlendStackAnimAssetTime(Node);
 	BlendStack.AnimAsset = UBlendStackAnimNodeLibrary::GetCurrentBlendStackAnimAsset(Node);
 	BlendStack.PlayRate = GetDynamicPlayRate(Node);
-	
+
 	const UAnimSequence* NewAnimSequence{static_cast<UAnimSequence*>(BlendStack.AnimAsset.Get())};
 	if (!NewAnimSequence)
 	{
@@ -612,7 +620,6 @@ void UGASPAnimInstance::RefreshBlendStackMachine(const FAnimUpdateContext& Conte
 	}
 	BlendStackMachine.bLoop = UBlendStackAnimNodeLibrary::IsCurrentAssetLooping(Reference);
 	BlendStackMachine.AssetTimeRemaining = UBlendStackAnimNodeLibrary::GetCurrentAssetTimeRemaining(Reference);
-	
 }
 
 void UGASPAnimInstance::RefreshEssentialValues(const float DeltaSeconds)
@@ -656,7 +663,7 @@ void UGASPAnimInstance::RefreshRagdollValues(const float DeltaSeconds)
 
 bool UGASPAnimInstance::IsEnabledAO() const
 {
-	return FMath::Abs(GetAOValue().X) <= 115.f && RotationMode != ERotationMode::OrientToMovement &&
+	return FMath::Abs(GetAOValue().X) <= 115.f && RotationMode != RotationTags::OrientToMovement &&
 		GetSlotMontageLocalWeight(AnimNames.AnimationSlotName) < .5f;
 }
 
@@ -915,15 +922,14 @@ void UGASPAnimInstance::RefreshTargetRotation()
 
 	if (IsMoving())
 	{
-		switch (RotationMode)
+		if (RotationMode == RotationTags::OrientToMovement)
 		{
-		case ERotationMode::OrientToMovement:
 			TargetRotation = CharacterInfo.ActorTransform.Rotator();
-			break;
-		default:
+		}
+		else
+		{
 			TargetRotation = CharacterInfo.ActorTransform.Rotator();
 			TargetRotation.Yaw += GetStrafeYawRotationOffset();
-			break;
 		}
 	}
 	else

@@ -48,23 +48,22 @@ AGASPCharacter* UGASPLinkedAnimInstance::GetCharacter() const
 	return Character;
 }
 
-EGait UGASPLinkedAnimInstance::GetGait() const
+FGameplayTag UGASPLinkedAnimInstance::GetGait() const
 {
 	if (IsValid(Parent))
 	{
 		return Parent->GetGait();
 	}
-	return EGait();
+	return FGameplayTag::EmptyTag;
 }
 
-FGameplayTag
- UGASPLinkedAnimInstance::GetMovementState() const
+FGameplayTag UGASPLinkedAnimInstance::GetMovementState() const
 {
 	if (IsValid(Parent))
 	{
 		return Parent->GetMovementState();
 	}
-	return FGameplayTag
+	return FGameplayTag::EmptyTag;
 ();
 }
 
@@ -74,7 +73,7 @@ FGameplayTag UGASPLinkedAnimInstance::GetMovementMode() const
 	{
 		return Parent->GetMovementMode();
 	}
-	return FGameplayTag();
+	return FGameplayTag::EmptyTag;
 }
 
 FGameplayTag UGASPLinkedAnimInstance::GetStanceMode() const
@@ -83,16 +82,16 @@ FGameplayTag UGASPLinkedAnimInstance::GetStanceMode() const
 	{
 		return Parent->GetStanceMode();
 	}
-	return FGameplayTag();
+	return FGameplayTag::EmptyTag;
 }
 
-ERotationMode UGASPLinkedAnimInstance::GetRotationMode() const
+FGameplayTag UGASPLinkedAnimInstance::GetRotationMode() const
 {
 	if (IsValid(Parent))
 	{
 		return Parent->GetRotationMode();
 	}
-	return ERotationMode();
+	return FGameplayTag::EmptyTag;
 }
 
 FCharacterInfo UGASPLinkedAnimInstance::GetCharacterInfo() const

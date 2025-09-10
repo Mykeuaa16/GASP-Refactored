@@ -47,11 +47,11 @@ protected:
 	FGameplayTag LocomotionAction{FGameplayTag::EmptyTag};
 
 	UPROPERTY(VisibleAnywhere, Category = "CharacterInfromation|States", BlueprintReadOnly, Transient)
-	EGait Gait{};
+	FGameplayTag Gait{};
 	UPROPERTY(VisibleAnywhere, Category = "CharacterInfromation|States", BlueprintReadOnly, Transient)
 	FGameplayTag MovementState{};
 	UPROPERTY(VisibleAnywhere, Category = "CharacterInfromation|States", BlueprintReadOnly, Transient)
-	ERotationMode RotationMode{};
+	FGameplayTag RotationMode{};
 	UPROPERTY(VisibleAnywhere, Category = "CharacterInfromation|States", BlueprintReadOnly, Transient)
 	FGameplayTag MovementMode{};
 	UPROPERTY(VisibleAnywhere, Category = "CharacterInfromation|States", BlueprintReadOnly, Transient)
@@ -73,13 +73,13 @@ protected:
 	FBlendStackMachine BlendStackMachine;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterInformation|PreviousValues", Transient)
-	FGameplayTag PreviousStanceMode{};
+	FGameplayTag PreviousStanceMode{FGameplayTag::EmptyTag};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterInformation|PreviousValues", Transient)
-	EGait PreviousGait{EGait::Run};
+	FGameplayTag PreviousGait{FGameplayTag::EmptyTag};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterInformation|PreviousValues", Transient)
-	FGameplayTag PreviousMovementState{MovementStateTags::Idle};
+	FGameplayTag PreviousMovementState{FGameplayTag::EmptyTag};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterInformation|PreviousValues", Transient)
-	ERotationMode PreviousRotationMode{ERotationMode::OrientToMovement};
+	FGameplayTag PreviousRotationMode{FGameplayTag::EmptyTag};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterInformation|PreviousValues", Transient)
 	FGameplayTag PreviousMovementMode{MovementModeTags::Grounded};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CharacterInformation|PreviousValues", Transient)
@@ -253,17 +253,16 @@ public:
 	FORCEINLINE FCharacterInfo GetCharacterInfo() const { return CharacterInfo; }
 
 	UFUNCTION(BlueprintGetter, Category = "Movement|Analys", meta = (BlueprintThreadSafe))
-	FORCEINLINE EGait GetGait() const { return Gait; }
+	FORCEINLINE FGameplayTag GetGait() const { return Gait; }
 
 	UFUNCTION(BlueprintGetter, Category = "Movement|Analys", meta = (BlueprintThreadSafe))
 	FORCEINLINE FGameplayTag GetStanceMode() const { return StanceMode; }
 
 	UFUNCTION(BlueprintGetter, Category = "Movement|Analys", meta = (BlueprintThreadSafe))
-	FORCEINLINE FGameplayTag
-	GetMovementState() const { return MovementState; }
+	FORCEINLINE FGameplayTag GetMovementState() const { return MovementState; }
 
 	UFUNCTION(BlueprintGetter, Category = "Movement|Analys", meta = (BlueprintThreadSafe))
-	FORCEINLINE ERotationMode GetRotationMode() const { return RotationMode; }
+	FORCEINLINE FGameplayTag GetRotationMode() const { return RotationMode; }
 
 	UFUNCTION(BlueprintGetter, Category = "Movement|Analys", meta = (BlueprintThreadSafe))
 	FORCEINLINE FGameplayTag GetMovementMode() const { return MovementMode; }

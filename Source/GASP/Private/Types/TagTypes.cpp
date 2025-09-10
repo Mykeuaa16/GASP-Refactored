@@ -3,42 +3,41 @@
 
 #include "Types/TagTypes.h"
 
-
 namespace MovementModeTags
 {
-	UE_DEFINE_GAMEPLAY_TAG(Grounded, FName{TEXTVIEW("GASP.MovementMode.OnGrounded")});
-	UE_DEFINE_GAMEPLAY_TAG(InAir, FName{TEXTVIEW("GASP.MovementMode.InAir")});
+	UE_DEFINE_GAMEPLAY_TAG(Grounded, FName{TEXTVIEW("GASP.Movement.Mode.OnGrounded")});
+	UE_DEFINE_GAMEPLAY_TAG(InAir, FName{TEXTVIEW("GASP.Movement.Mode.InAir")});
 }
 
 namespace PoseModeTags
 {
-	UE_DEFINE_GAMEPLAY_TAG(Default, FName{TEXTVIEW("GASP.PoseMode.Default")})
-	UE_DEFINE_GAMEPLAY_TAG(Normal, FName{TEXTVIEW("GASP.PoseMode.Normal")})
-	UE_DEFINE_GAMEPLAY_TAG(Masculine, FName{TEXTVIEW("GASP.PoseMode.Masculine")})
-	UE_DEFINE_GAMEPLAY_TAG(Feminine, FName{TEXTVIEW("GASP.PoseMode.Feminine")})
+	UE_DEFINE_GAMEPLAY_TAG(Default, FName{TEXTVIEW("GASP.Pose.Default")})
+	UE_DEFINE_GAMEPLAY_TAG(Normal, FName{TEXTVIEW("GASP.Pose.Normal")})
+	UE_DEFINE_GAMEPLAY_TAG(Masculine, FName{TEXTVIEW("GASP.Pose.Masculine")})
+	UE_DEFINE_GAMEPLAY_TAG(Feminine, FName{TEXTVIEW("GASP.Pose.Feminine")})
 }
 
 namespace OverlayModeTags
 {
-	UE_DEFINE_GAMEPLAY_TAG(Default, FName{TEXTVIEW("GASP.OverlayMode.Default")})
-	UE_DEFINE_GAMEPLAY_TAG(Injured, FName{TEXTVIEW("GASP.OverlayMode.Injured")})
-	UE_DEFINE_GAMEPLAY_TAG(HandsTied, FName{TEXTVIEW("GASP.OverlayMode.HandsTied")})
-	UE_DEFINE_GAMEPLAY_TAG(Rifle, FName{TEXTVIEW("GASP.OverlayMode.Rifle")})
-	UE_DEFINE_GAMEPLAY_TAG(PistolOneHanded, FName{TEXTVIEW("GASP.OverlayMode.PistolOneHanded")})
-	UE_DEFINE_GAMEPLAY_TAG(PistolTwoHanded, FName{TEXTVIEW("GASP.OverlayMode.PistolTwoHanded")})
-	UE_DEFINE_GAMEPLAY_TAG(Bow, FName{TEXTVIEW("GASP.OverlayMode.Bow")})
-	UE_DEFINE_GAMEPLAY_TAG(Torch, FName{TEXTVIEW("GASP.OverlayMode.Torch")})
-	UE_DEFINE_GAMEPLAY_TAG(Binoculars, FName{TEXTVIEW("GASP.OverlayMode.Binoculars")})
-	UE_DEFINE_GAMEPLAY_TAG(Box, FName{TEXTVIEW("GASP.OverlayMode.Box")})
-	UE_DEFINE_GAMEPLAY_TAG(Barrel, FName{TEXTVIEW("GASP.OverlayMode.Barrel")})
+	UE_DEFINE_GAMEPLAY_TAG(Default, FName{TEXTVIEW("GASP.Overlay.Default")})
+	UE_DEFINE_GAMEPLAY_TAG(Injured, FName{TEXTVIEW("GASP.Overlay.Injured")})
+	UE_DEFINE_GAMEPLAY_TAG(HandsTied, FName{TEXTVIEW("GASP.Overlay.HandsTied")})
+	UE_DEFINE_GAMEPLAY_TAG(Rifle, FName{TEXTVIEW("GASP.Overlay.Rifle")})
+	UE_DEFINE_GAMEPLAY_TAG(PistolOneHanded, FName{TEXTVIEW("GASP.Overlay.PistolOneHanded")})
+	UE_DEFINE_GAMEPLAY_TAG(PistolTwoHanded, FName{TEXTVIEW("GASP.Overlay.PistolTwoHanded")})
+	UE_DEFINE_GAMEPLAY_TAG(Bow, FName{TEXTVIEW("GASP.Overlay.Bow")})
+	UE_DEFINE_GAMEPLAY_TAG(Torch, FName{TEXTVIEW("GASP.Overlay.Torch")})
+	UE_DEFINE_GAMEPLAY_TAG(Binoculars, FName{TEXTVIEW("GASP.Overlay.Binoculars")})
+	UE_DEFINE_GAMEPLAY_TAG(Box, FName{TEXTVIEW("GASP.Overlay.Box")})
+	UE_DEFINE_GAMEPLAY_TAG(Barrel, FName{TEXTVIEW("GASP.Overlay.Barrel")})
 }
 
 namespace LocomotionActionTags
 {
-	UE_DEFINE_GAMEPLAY_TAG(Ragdoll, FName{TEXTVIEW("GASP.LocomotionAction.Ragdoll")})
-	UE_DEFINE_GAMEPLAY_TAG(Vault, FName{TEXTVIEW("GASP.LocomotionAction.Vault")})
-	UE_DEFINE_GAMEPLAY_TAG(Mantle, FName{TEXTVIEW("GASP.LocomotionAction.Mantle")})
-	UE_DEFINE_GAMEPLAY_TAG(Hurdle, FName{TEXTVIEW("GASP.LocomotionAction.Hurdle")})
+	UE_DEFINE_GAMEPLAY_TAG(Ragdoll, FName{TEXTVIEW("GASP.Locomotion.Action.Ragdoll")})
+	UE_DEFINE_GAMEPLAY_TAG(Vault, FName{TEXTVIEW("GASP.Locomotion.Action.Vault")})
+	UE_DEFINE_GAMEPLAY_TAG(Mantle, FName{TEXTVIEW("GASP.Locomotion.Action.Mantle")})
+	UE_DEFINE_GAMEPLAY_TAG(Hurdle, FName{TEXTVIEW("GASP.Locomotion.Action.Hurdle")})
 }
 
 namespace FoleyTags
@@ -57,6 +56,19 @@ namespace FoleyTags
 	UE_DEFINE_GAMEPLAY_TAG(Tumble, FName{TEXTVIEW("Foley.Event.Tumble")})
 }
 
+namespace GaitTags
+{
+	UE_DEFINE_GAMEPLAY_TAG(Walk, FName{TEXTVIEW("GASP.Movement.Gait.Walk")});
+	UE_DEFINE_GAMEPLAY_TAG(Run, FName{TEXTVIEW("GASP.Movement.Gait.Run")});
+	UE_DEFINE_GAMEPLAY_TAG(Sprint, FName{TEXTVIEW("GASP.Movement.Gait.Sprint")});
+}
+
+namespace RotationTags
+{
+	UE_DEFINE_GAMEPLAY_TAG(OrientToMovement, FName{TEXTVIEW("GASP.Movement.Rotation.OrientToMovement")});
+	UE_DEFINE_GAMEPLAY_TAG(Strafe, FName{TEXTVIEW("GASP.Movement.Rotation.Strafe")});
+	UE_DEFINE_GAMEPLAY_TAG(Aim, FName{TEXTVIEW("GASP.Movement.Rotation.Aim")});
+}
 
 namespace StanceTags
 {
@@ -66,6 +78,6 @@ namespace StanceTags
 
 namespace MovementStateTags
 {
-	UE_DEFINE_GAMEPLAY_TAG(Moving, FName{TEXTVIEW("GASP.MovementState.Moving")});
-	UE_DEFINE_GAMEPLAY_TAG(Idle, FName{TEXTVIEW("GASP.MovementState.Idle")});
+	UE_DEFINE_GAMEPLAY_TAG(Moving, FName{TEXTVIEW("GASP.Movement.State.Moving")});
+	UE_DEFINE_GAMEPLAY_TAG(Idle, FName{TEXTVIEW("GASP.Movement.State.Idle")});
 }
